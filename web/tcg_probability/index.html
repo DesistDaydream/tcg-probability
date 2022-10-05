@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <script src="node_models/code.jquery.com/jquery.min.js"></script>
+  <link href="node_models/maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet"
+    type="text/css" />
+  <script src="node_models/maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+  <link rel="stylesheet" type="text/css" href="css/probability.css" />
+  <script src="js/probability.js"></script>
+  <script src="js/templates.js"></script>
+
+  <meta charset="utf-8" />
+  <title>TCG 卡牌抽牌概率计算器</title>
+</head>
+
+<body>
+  <nav class="navbar navbar-inverse navbar-static-top">
+    <div class="container-fluid">
+      <div class="navbar-header">
+        <a class="navbar-brand" href="#">TCG 卡牌抽牌概率计算器</a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container">
+    <div class="row">
+      <div class="content col-sm-6 col-sm-offset-3">
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            TCG 卡牌抽牌概率计算器
+          </div>
+          <div class="panel-body">
+            用数学的力量轻松改进我们的套牌！这个计算器可以让我们找到起手抽到我们想要卡牌的概率，
+            基于此可以让我们在改造套牌时做出更好的决定。点击下面的示例以开始使用。
+            <br /><br />
+            <div class="panel panel-info">
+              <div class="panel-heading">
+                <a data-toggle="collapse" href="#examples">Examples</a>
+              </div>
+              <div id="examples" class="panel-body panel-collapse collapse">
+                <div class="panel-body">
+                  假设牌组中有 2 张黑魔导、3 张魔术师之杖，如果我们想要抽到 1
+                  张黑魔导、至少 1 张魔术师之杖的话，可以使用下面的方式：
+                  <div class="col-xs-12">
+                    <div class="example-well well col-xs-12">
+                      <table class="table">
+                        <thead>
+                          <tr>
+                            <th width="50%">卡名</th>
+                            <th>总数</th>
+                            <th>至少</th>
+                            <th>至多</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr>
+                            <td>黑魔导</td>
+                            <td>2</td>
+                            <td>1</td>
+                            <td>1</td>
+                          </tr>
+
+                          <tr>
+                            <td>魔术师之杖</td>
+                            <td>3</td>
+                            <td>1</td>
+                            <td>3</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+
+                  <br /><br />
+                  假设牌组中有 5 张 X 类型的牌，6 张 Y 类型的牌。我们想要抽到 X 和 Y 至少一样一张的话：
+                  <div class="col-xs-12">
+                    <div class="example-well well col-xs-12">
+                      <table class="table">
+                        <thead>
+                          <tr>
+                            <th width="50%">卡名</th>
+                            <th>总数</th>
+                            <th>至少</th>
+                            <th>至多</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr>
+                            <td>X</td>
+                            <td>5</td>
+                            <td>1</td>
+                            <td>5</td>
+                          </tr>
+
+                          <tr>
+                            <td>Y</td>
+                            <td>6</td>
+                            <td>1</td>
+                            <td>6</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <hr />
+          <div class="panel-body">
+            <form class="form-horizontal" role="form">
+              <div class="form-group">
+                <label for="deck-size" class="col-xs-3 col-xs-offset-3 control-label">卡组总数</label>
+                <div class="col-xs-3">
+                  <input type="text" class="form-control number-input" id="deck-size" value="40" />
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="hand-size" class="col-xs-3 col-xs-offset-3 control-label">手牌总数</label>
+                <div class="col-xs-3">
+                  <input type="text" class="form-control number-input" id="hand-size" value="5" />
+                </div>
+              </div>
+            </form>
+          </div>
+          <hr />
+          <div class="panel-body card-types-container">
+            <form action="" class="form-horizontal" role="form">
+              <div class="form-group titles">
+                <label class="col-xs-2 col-xs-offset-6">总数</label>
+                <label class="col-xs-2">至少</label>
+                <label class="col-xs-2">至多</label>
+              </div>
+              <div id="card-types-container">
+                <div class="form-group">
+                  <label for="deck-size" class="col-xs-6 control-label">杂牌</label>
+                  <div class="col-xs-2">
+                    <p class="form-control-static number-input text-center" id="misc-amt" style="color: black">
+                      40
+                    </p>
+                  </div>
+                  <div class="col-xs-2">
+                    <p class="form-control-static number-input text-center" id="misc-min">
+                      0
+                    </p>
+                  </div>
+                  <div class="col-xs-2">
+                    <p class="form-control-static number-input text-center" id="misc-max">
+                      5
+                    </p>
+                  </div>
+                </div>
+                <div class="form-group" id="card-type-0-container">
+                  <div class="col-xs-6">
+                    <input class="col-xs-6 form-control card-types-input card-types-name" id="card-type-0-name"
+                      placeholder="Card Name" />
+                  </div>
+                  <div class="col-xs-2">
+                    <input type="text" class="form-control number-input card-types-amt" id="card-type-0-amt"
+                      placeholder="3" />
+                  </div>
+                  <div class="col-xs-2">
+                    <input type="text" class="form-control number-input card-types-min" id="card-type-0-min"
+                      placeholder="1" />
+                  </div>
+                  <div class="col-xs-2">
+                    <input type="text" class="form-control number-input card-types-max" id="card-type-0-max"
+                      placeholder="3" />
+                  </div>
+                </div>
+              </div>
+            </form>
+            <div>
+              <button id="card-types-add-button" class="btn btn-default col-xs-1 col-xs-offset-9">
+                +
+              </button>
+              <button id="card-types-sub-button" class="btn btn-default col-xs-1" disabled>
+                -
+              </button>
+            </div>
+          </div>
+          <div class="panel-footer" id="percentage">
+            <label>我们有 <span style="color: green">100</span>%
+              的概率抽到这些牌</label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <p style="color: #808080; padding-top: 15px; font-size: 12px">
+      程序源地址：https://yugioh.party/#
+    </p>
+  </div>
+</body>
+
+</html>
