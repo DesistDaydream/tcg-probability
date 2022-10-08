@@ -342,8 +342,6 @@ function recursiveCalculate(currentHand, currentHandSize, objects) {
     var newChance = 1
     var output = ""
 
-    console.log("当前手牌", currentHand)
-
     for (var i = 0; i < currentHand.length; i += 2) {
       output += "(" + currentHand[i] + " choose " + currentHand[i + 1] + ") * "
       newChance *= choose(currentHand[i], currentHand[i + 1])
@@ -359,7 +357,7 @@ function recursiveCalculate(currentHand, currentHandSize, objects) {
       newChance *= choose(getMiscAmt(), getHandSize() - currentHandSize)
     }
 
-    console.log(output)
+    console.log(output.substring(0, output.length - 3))
     return newChance
   }
 
