@@ -264,7 +264,10 @@ function getCardMax(index) {
 }
 
 var valid = true
+// 计算
 function calculate() {
+  deckSize = getDeckSize()
+  handSize = getHandSize()
   if (!valid) {
     $("#percentage").html(
       '<label style="color: red">Unable to calculate. Please fix the values.</label>'
@@ -282,12 +285,16 @@ function calculate() {
     }
 
     var chance = 0
-    if (getMiscMax() === 0 && getDeckSize() == getHandSize()) {
+    if (getMiscMax() === 0 && deckSize == handSize) {
       chance = 100
     } else {
       var recursive = recursiveCalculate([], 0, objects)
-      chance = (recursive / choose(getDeckSize(), getHandSize())) * 100
-      console.log(recursive)
+      console.log("递归计算结果,想要的手牌的总组合数: ", recursive)
+      totalNumberOfCombinations = choose(deckSize, handSize)
+      console.log(
+        `从 ${deckSize} 张取 ${handSize} 张手牌的总组合数为 ${totalNumberOfCombinations}`
+      )
+      chance = (recursive / totalNumberOfCombinations) * 100
     }
 
     var color = ["red", "#ff9900", "#ffbf00", "green", "green"][
@@ -304,6 +311,7 @@ function calculate() {
   }
 }
 
+// 递归计算，objects 为想要在手牌中抽到的卡。返回想要取到对象的总组合数
 function recursiveCalculate(currentHand, currentHandSize, objects) {
   if (objects.length === 0 || currentHandSize >= getHandSize()) {
     if (currentHandSize == getHandSize()) {
@@ -353,7 +361,7 @@ function recursiveCalculate(currentHand, currentHandSize, objects) {
     currentHand.push(i)
 
     chance += recursiveCalculate(currentHand, currentHandSize + i, objects)
-    //console.log("N: " + chance);
+    // console.log("N: " + chance)
 
     currentHand.pop()
     currentHand.pop()
@@ -364,6 +372,7 @@ function recursiveCalculate(currentHand, currentHandSize, objects) {
   return chance
 }
 
+// 阶乘
 function factorial(x) {
   x = parseInt(x, 10)
   if (isNaN(x)) return 1
@@ -376,6 +385,7 @@ function factorial(x) {
   return y
 }
 
+// 从 n 中取 k 的总组合数
 function choose(n, k) {
   n = parseInt(n, 10)
   if (isNaN(n)) n = 0
