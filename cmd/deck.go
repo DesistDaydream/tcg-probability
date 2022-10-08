@@ -21,18 +21,18 @@ func (flags *Flags) AddFlags() {
 	pflag.BoolVarP(&flags.DoNotCalculate, "calculate", "c", false, "是否只通过数学计算获取结果")
 }
 
-type WantCardInfo struct {
-	Name string
-	Have int // 在卡组中有多少张卡
-	Min  int
-	Max  int
-}
-
 type CardsInfo struct {
 	WantCards []WantCardInfo
 	MiscHave  int
 	MiscMin   int
 	MiscMax   int
+}
+
+type WantCardInfo struct {
+	Name string
+	Have int // 在卡组中有多少张卡
+	Min  int
+	Max  int
 }
 
 func NewWantCardsInfo(flags *Flags) *CardsInfo {
@@ -78,17 +78,15 @@ func main() {
 
 	// 设置变量
 	var (
-		Deck              []string
-		TargetCombination int      = 0 // 满足条件的手牌组合数
-		wantHandCards     []string     // 想要抓到手上的卡牌
-		currentHand       []int
+		Deck          []string
+		wantHandCards []string // 想要抓到手上的卡牌
 	)
 
 	wantCardsInfo := NewWantCardsInfo(flags)
 
 	for _, wantcard := range wantCardsInfo.WantCards {
 		logrus.Infof(
-			"牌组中有 %v 张【\033[0;31;31m %v \033[0m】，我们想要最少【\033[0;31;31m %v \033[0m】张、最多【\033[0;31;31m %v \033[0m】张",
+			"卡组中有 %v 张【\033[0;31;31m %v \033[0m】，我们想要最少【\033[0;31;31m %v \033[0m】张、最多【\033[0;31;31m %v \033[0m】张",
 			wantcard.Have, wantcard.Name, wantcard.Min, wantcard.Max)
 		// 将手牌填充到卡组中
 		for i := 0; i < wantcard.Have; i++ {
@@ -100,25 +98,26 @@ func main() {
 		}
 	}
 
-	// 填充牌组中空余位置
+	// 填充卡组中空余位置
 	for i := 0; i < flags.DeckSize; i++ {
 		if len(Deck) < flags.DeckSize {
 			Deck = append(Deck, "any")
 		}
 	}
 
-	logrus.Debugf("当前牌组：%v", Deck)
+	logrus.Debugf("当前卡组：%v", Deck)
 	logrus.Debugf("想要的最少手牌：%v", wantHandCards)
 	// ！！！注意：这里暂时只能计算想要手牌中最少存在几张A，几张B的情况，默认最多可以有所有A、B、等等
 
 	if flags.DoNotCalculate {
-		// 遍历牌组，获取牌组中所有组合种类的列表
+		var TargetCombination int = 0 // 满足条件的手牌组合数
+		// 遍历卡组，获取卡组中所有组合种类的列表
 		combinations := cbn.TraversalDeckCombination(Deck, cbn.CombinationIndexs(flags.DeckSize, flags.HandSize))
 
 		logrus.Debugf("原始组合总数: %v", len(combinations))
 		cbn.CheckResult(flags.DeckSize, flags.HandSize, combinations)
 
-		// 获取牌组中指定组合的总数
+		// 获取卡组中指定组合的总数
 		for _, combination := range combinations {
 			if cbn.ConditionCount(combination, wantHandCards) {
 				TargetCombination++
@@ -127,14 +126,17 @@ func main() {
 		logrus.Infof("从 %v 张牌的卡组中抽 %v 张卡，包含上述想要的最少手牌的概率为 %v。", flags.DeckSize, flags.HandSize, float64(TargetCombination)/float64(len(combinations)))
 
 	} else {
+		var currentHand []int
 		// 所有可能的组合总数
 		all := cbn.Combination(flags.DeckSize, flags.HandSize)
-		logrus.Infof("从 %v 张中取任意 %v 张的所有组合总数: %v", flags.DeckSize, flags.HandSize, all)
-		// TODO: 计算想要的组合总数
-		handSize := flags.HandSize
-		result := recursiveCalculate(currentHand, 0, wantCardsInfo, handSize)
-		logrus.Infoln(result)
-		logrus.Infoln(float64(result) / float64(all))
+		// 计算想要的组合总数
+		result := recursiveCalculate(currentHand, 0, wantCardsInfo, flags.HandSize)
+
+		logrus.WithFields(logrus.Fields{
+			"总组合数":        all,
+			"包含想要的卡牌的组合数": result,
+			"概率":          float64(result) / float64(all),
+		}).Infof("从 %v 张牌的卡组中抽 %v 张卡", flags.DeckSize, flags.HandSize)
 	}
 }
 
@@ -142,7 +144,7 @@ func recursiveCalculate(currentHand []int, currentHandSize int, objects *CardsIn
 	// var obj WantCardInfo
 	if len(objects.WantCards) == 0 || currentHandSize >= handSize {
 		if currentHandSize == handSize {
-			fmt.Println("当前手牌容量已经等于手牌容量，检查想要卡片长度：", len(objects.WantCards))
+			logrus.Debugf("当前手牌容量已经等于手牌容量，检查想要卡片长度：%v", len(objects.WantCards))
 			var noChance = false
 			for i := 0; i < len(objects.WantCards); i++ {
 				if objects.WantCards[i].Min != 0 {
@@ -161,6 +163,7 @@ func recursiveCalculate(currentHand []int, currentHandSize int, objects *CardsIn
 		var newChance int64 = 1
 		var output string = ""
 
+		// ！！计算部分！！
 		for i := 0; i < len(currentHand); i += 2 {
 			output += fmt.Sprintf("(%v choose  %v) * ", currentHand[i], currentHand[i+1])
 			newChance *= cbn.Combination(currentHand[i], currentHand[i+1])
@@ -171,7 +174,7 @@ func recursiveCalculate(currentHand []int, currentHandSize int, objects *CardsIn
 			newChance *= cbn.Combination(objects.MiscHave, handSize-currentHandSize)
 		}
 
-		fmt.Println(output)
+		logrus.Debugf(output)
 
 		// console.log(output.substring(0, output.length-3))
 		return newChance
@@ -198,23 +201,3 @@ func recursiveCalculate(currentHand []int, currentHandSize int, objects *CardsIn
 
 	return chance
 }
-
-// func BigFactorial(n *big.Int) *big.Int {
-// 	if n.Int64() == 1 {
-// 		return big.NewInt(1)
-// 	} else {
-// 		return n.Mul(n, BigFactorial(big.NewInt(n.Int64()-1)))
-// 	}
-// }
-
-// func Combination(n, k int64) int64 {
-// 	result := big.NewInt(0)
-// 	if n <= k {
-// 		log.Println(n, k)
-// 		return result.Int64()
-// 	}
-// 	nF := BigFactorial(big.NewInt(int64(n)))
-// 	kF := BigFactorial(big.NewInt(int64(k)))
-// 	nkF := BigFactorial(big.NewInt(int64(n - k)))
-// 	return result.Div(result.Div(nF, kF), nkF).Int64()
-// }
