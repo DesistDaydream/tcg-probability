@@ -179,6 +179,7 @@ function getHandSize() {
   return parseInt(ret, 10)
 }
 
+// 获取杂牌总张数
 function getMiscAmt() {
   var ret = $("#misc-amt").text()
   if (ret === "") {
@@ -198,6 +199,7 @@ function setMiscAmt(val) {
   $("#misc-amt").text(val)
 }
 
+// 获取杂牌最少几张
 function getMiscMin() {
   var ret = $("#misc-min").text()
   if (ret === "") {
@@ -217,6 +219,7 @@ function setMiscMin(val) {
   $("#misc-min").text(val)
 }
 
+// 获取杂牌最多几张
 function getMiscMax() {
   var ret = $("#misc-max").text()
   if (ret === "") {
@@ -285,9 +288,11 @@ function calculate() {
     }
 
     var chance = 0
+    // 如果杂牌至多为9或者牌组数等于手牌数，则几率为 100%
     if (getMiscMax() === 0 && deckSize == handSize) {
       chance = 100
     } else {
+      // ！！开始计算！！
       var recursive = recursiveCalculate([], 0, objects)
       console.log(
         `从 ${deckSize} 张取 %o 这些可能的总组合数: ${recursive}`,
