@@ -1,8 +1,8 @@
 package main
 
 import (
-	cbn "github.com/DesistDaydream/yu-gi-oh/pkg/combination"
-	"github.com/DesistDaydream/yu-gi-oh/pkg/logging"
+	cbn "github.com/DesistDaydream/tcg-probability/pkg/combination"
+	"github.com/DesistDaydream/tcg-probability/pkg/logging"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/pflag"
 )
@@ -12,13 +12,15 @@ var (
 )
 
 type Flags struct {
-	DeckSize int
-	HandSize int
+	DeckSize      int
+	HandSize      int
+	OnlyCalculate bool
 }
 
 func (flags *Flags) AddFlags() {
-	pflag.IntVarP(&flags.DeckSize, "deck-size", "d", 40, "卡组总数")
+	pflag.IntVarP(&flags.DeckSize, "deck-size", "d", 50, "卡组总数")
 	pflag.IntVarP(&flags.HandSize, "hand-size", "h", 5, "手牌总数")
+	pflag.BoolVarP(&flags.OnlyCalculate, "calculate", "c", false, "是否只通过数学计算获取结果")
 }
 
 type WantCardInfo struct {
@@ -92,26 +94,22 @@ func main() {
 	logrus.Debugf("想要的最少手牌：%v", wantHandCards)
 	// ！！！注意：这里暂时只能计算想要手牌中最少存在几张A，几张B的情况，默认最多可以有所有A、B、等等
 
-	// 遍历牌组，获取牌组中所有组合种类的列表
-	combinations := cbn.TraversalDeckCombination(Deck, cbn.CombinationIndexs(flags.DeckSize, flags.HandSize))
+	if flags.OnlyCalculate {
+		// TODO: 仅执行数学计算
 
-	logrus.Debugf("原始组合总数: %v", len(combinations))
-	// fmt.Println("牌组中所有组合列表:", combinations)
-	cbn.CheckResult(flags.DeckSize, flags.HandSize, combinations)
+	} else {
+		// 遍历牌组，获取牌组中所有组合种类的列表
+		combinations := cbn.TraversalDeckCombination(Deck, cbn.CombinationIndexs(flags.DeckSize, flags.HandSize))
 
-	// 获取牌组中指定组合的总数
-	for _, combination := range combinations {
-		if cbn.ConditionCount(combination, wantHandCards) {
-			TargetCombination++
+		logrus.Debugf("原始组合总数: %v", len(combinations))
+		cbn.CheckResult(flags.DeckSize, flags.HandSize, combinations)
+
+		// 获取牌组中指定组合的总数
+		for _, combination := range combinations {
+			if cbn.ConditionCount(combination, wantHandCards) {
+				TargetCombination++
+			}
 		}
+		logrus.Infof("从 %v 张牌的卡组中抽 %v 张卡，包含上述想要的最少手牌的概率为 %v。", flags.DeckSize, flags.HandSize, float64(TargetCombination)/float64(len(combinations)))
 	}
-
-	// logrus.WithFields(logrus.Fields{
-	// 	"牌组数":  flags.DeckSize,
-	// 	"手牌数":  flags.HandSize,
-	// 	"组合总数": TargetCombination,
-	// 	"概率":   float64(TargetCombination) / float64(len(combinations)),
-	// }).Infof("")
-
-	logrus.Infof("从 %v 张牌的卡组中抽 %v 张卡，包含上述想要的最少手牌的概率为 %v。", flags.DeckSize, flags.HandSize, float64(TargetCombination)/float64(len(combinations)))
 }

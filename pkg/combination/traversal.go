@@ -3,7 +3,7 @@ package combination
 import (
 	"fmt"
 
-	"github.com/DesistDaydream/yu-gi-oh/pkg/subset"
+	"github.com/DesistDaydream/tcg-probability/pkg/subset"
 	"github.com/sirupsen/logrus"
 )
 

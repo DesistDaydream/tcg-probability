@@ -1,4 +1,4 @@
-module github.com/DesistDaydream/yu-gi-oh
+module github.com/DesistDaydream/tcg-probability
 
 go 1.18
 
