@@ -140,8 +140,8 @@ func main() {
 	}
 }
 
+// 使用纯数学计算的方式获取指定条件下的组合数
 func recursiveCalculate(currentHand []int, currentHandSize int, objects *CardsInfo, handSize int) int64 {
-	// var obj WantCardInfo
 	if len(objects.WantCards) == 0 || currentHandSize >= handSize {
 		if currentHandSize == handSize {
 			logrus.Debugf("当前手牌容量已经等于手牌容量，检查想要卡片长度：%v", len(objects.WantCards))
@@ -176,7 +176,6 @@ func recursiveCalculate(currentHand []int, currentHandSize int, objects *CardsIn
 
 		logrus.Debugf(output)
 
-		// console.log(output.substring(0, output.length-3))
 		return newChance
 	}
 
@@ -189,12 +188,9 @@ func recursiveCalculate(currentHand []int, currentHandSize int, objects *CardsIn
 		currentHand = append(currentHand, i)
 
 		chance += recursiveCalculate(currentHand, currentHandSize+i, objects, handSize)
-		// console.log("N: " + chance)
 
 		currentHand = currentHand[:len(currentHand)-1]
 		currentHand = currentHand[:len(currentHand)-1]
-		// currentHand.pop()
-		// currentHand.pop()
 	}
 
 	objects.WantCards = append(objects.WantCards, obj)
