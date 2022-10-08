@@ -98,7 +98,7 @@ func main() {
 	if flags.OnlyCalculate {
 		// 所有可能的组合总数
 		all := combination.Combination(flags.DeckSize, flags.HandSize).Int64()
-		logrus.Infof("%v", all)
+		logrus.Infof("从 %v 张中取任意 %v 张的所有组合总数: %v", flags.DeckSize, flags.HandSize, all)
 		// TODO: 计算想要的组合总数
 
 	} else {
