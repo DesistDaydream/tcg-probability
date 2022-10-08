@@ -13,8 +13,8 @@ func TestCombination(t *testing.T) {
 
 	log.Printf("从 %v 个元素中取 %v 个元素的组合数:%v", n, k, Combination(n, k))
 
-	fenzi := Combination(n-b, k).Int64() + Combination(n-a, k).Int64() - Combination(n-a-b, k).Int64()
-	fenmu := Combination(n, k).Int64()
+	fenzi := Combination(n-b, k) + Combination(n-a, k) - Combination(n-a-b, k)
+	fenmu := Combination(n, k)
 
 	log.Printf("分子：%v 分母：%v", float64(fenzi), float64(fenmu))
 

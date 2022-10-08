@@ -15,7 +15,7 @@ func CombinationIndexs(n int, k int) [][]int {
 	}
 
 	//保存最终结果的数组，总数直接通过数学公式计算
-	result := make([][]int, 0, Combination(n, k).Int64())
+	result := make([][]int, 0, Combination(n, k))
 	//保存每一个组合的索引的数组，1表示选中，0表示未选中
 	indexs := make([]int, n)
 	for i := 0; i < n; i++ {
@@ -110,7 +110,7 @@ func ConditionCount(combination []string, condition []string) bool {
 
 // 判断遍历所有组合数的结果是否正确
 func CheckResult(n, k int, combinations [][]string) {
-	rightCount := Combination(n, k).Int64()
+	rightCount := Combination(n, k)
 	if int(rightCount) == len(combinations) {
 		logrus.Debugln("数学计算结果与遍历结果相同")
 	} else {

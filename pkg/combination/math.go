@@ -23,14 +23,14 @@ func BigFactorial(n *big.Int) *big.Int {
 }
 
 // 组合
-func Combination(n, k int) *big.Int {
+func Combination(n, k int) int64 {
 	result := big.NewInt(0)
 	if n <= k {
 		log.Println(n, k)
-		return result
+		return result.Int64()
 	}
 	nF := BigFactorial(big.NewInt(int64(n)))
 	kF := BigFactorial(big.NewInt(int64(k)))
 	nkF := BigFactorial(big.NewInt(int64(n - k)))
-	return result.Div(result.Div(nF, kF), nkF)
+	return result.Div(result.Div(nF, kF), nkF).Int64()
 }
