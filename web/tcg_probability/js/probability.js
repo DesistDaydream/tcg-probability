@@ -289,7 +289,10 @@ function calculate() {
       chance = 100
     } else {
       var recursive = recursiveCalculate([], 0, objects)
-      console.log("递归计算结果,想要的手牌的总组合数: ", recursive)
+      console.log(
+        `从 ${deckSize} 张取 %o 这些可能的总组合数: ${recursive}`,
+        objects
+      )
       totalNumberOfCombinations = choose(deckSize, handSize)
       console.log(
         `从 ${deckSize} 张取 ${handSize} 张手牌的总组合数为 ${totalNumberOfCombinations}`
