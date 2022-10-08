@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/DesistDaydream/tcg-probability/pkg/combination"
 	cbn "github.com/DesistDaydream/tcg-probability/pkg/combination"
 	"github.com/DesistDaydream/tcg-probability/pkg/logging"
 	"github.com/sirupsen/logrus"
@@ -95,7 +96,10 @@ func main() {
 	// ！！！注意：这里暂时只能计算想要手牌中最少存在几张A，几张B的情况，默认最多可以有所有A、B、等等
 
 	if flags.OnlyCalculate {
-		// TODO: 仅执行数学计算
+		// 所有可能的组合总数
+		all := combination.Combination(flags.DeckSize, flags.HandSize).Int64()
+		logrus.Infof("%v", all)
+		// TODO: 计算想要的组合总数
 
 	} else {
 		// 遍历牌组，获取牌组中所有组合种类的列表
