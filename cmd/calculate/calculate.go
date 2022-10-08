@@ -8,17 +8,17 @@ import (
 )
 
 type CardsInfo struct {
-	WantCards []WantCardInfo
+	WantCards []WantCard
 	MiscHave  int
 	MiscMin   int
 	MiscMax   int
 }
 
-type WantCardInfo struct {
+type WantCard struct {
 	Name string
-	Have int // 在卡组中有多少张卡
-	Min  int
-	Max  int
+	Have int // 在卡组中有多少张这类卡
+	Min  int // 希望抽到最少的张数
+	Max  int // 希望抽到最多的张数
 }
 
 func NewCardsInfo(deckSize, handSize int) *CardsInfo {
@@ -27,7 +27,7 @@ func NewCardsInfo(deckSize, handSize int) *CardsInfo {
 		miscMin  int
 		miscMax  int = handSize
 	)
-	wantCards := []WantCardInfo{
+	wantCards := []WantCard{
 		{Name: "Lv.3", Have: 13, Min: 1, Max: 13},
 		// {Name: "Lv.4", Have: 10, Min: 1, Max: 10},
 	}
@@ -47,6 +47,40 @@ func NewCardsInfo(deckSize, handSize int) *CardsInfo {
 		MiscMin:   miscMin,
 		MiscMax:   miscMax,
 	}
+}
+
+// 生成卡组
+func (c *CardsInfo) GenDeck(deckSize int) ([]string, []string) {
+	var (
+		deck          []string // 卡组列表
+		wantHandCards []string // 想要抓到手上的卡牌
+	)
+
+	for _, wantcard := range c.WantCards {
+		logrus.Infof(
+			"卡组中有 %v 张【\033[0;31;31m %v \033[0m】，我们想要最少【\033[0;31;31m %v \033[0m】张、最多【\033[0;31;31m %v \033[0m】张",
+			wantcard.Have, wantcard.Name, wantcard.Min, wantcard.Max)
+		// 将手牌填充到卡组中
+		for i := 0; i < wantcard.Have; i++ {
+			deck = append(deck, wantcard.Name)
+		}
+		// 将想要的卡牌保存到数组变量中
+		for i := 0; i < wantcard.Min; i++ {
+			wantHandCards = append(wantHandCards, wantcard.Name)
+		}
+	}
+
+	// 填充卡组中空余位置
+	for i := 0; i < deckSize; i++ {
+		if len(deck) < deckSize {
+			deck = append(deck, "any")
+		}
+	}
+
+	logrus.Debugf("当前卡组：%v", deck)
+	logrus.Debugf("想要的最少手牌：%v", wantHandCards)
+
+	return deck, wantHandCards
 }
 
 // 使用纯数学计算的方式获取指定条件下的组合数
