@@ -17,7 +17,7 @@ type Flags struct {
 func (flags *Flags) AddFlags() {
 	pflag.IntVarP(&flags.DeckSize, "deck-size", "d", 50, "卡组总数")
 	pflag.IntVarP(&flags.HandSize, "hand-size", "h", 5, "手牌总数")
-	pflag.BoolVarP(&flags.DoNotCalculate, "calculate", "c", false, "是否只通过数学计算获取结果")
+	pflag.BoolVarP(&flags.DoNotCalculate, "calculate", "c", false, "是否不通过数学计算获取结果")
 }
 
 func main() {
