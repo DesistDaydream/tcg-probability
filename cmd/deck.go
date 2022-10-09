@@ -22,14 +22,14 @@ func (flags *Flags) AddFlags() {
 
 func main() {
 	// 设置命令行标志
-	ygoFlags := &logging.LoggingFlags{}
-	ygoFlags.AddFlags()
+	logFlags := &logging.LoggingFlags{}
+	logFlags.AddFlags()
 	flags := &Flags{}
 	flags.AddFlags()
 	pflag.Parse()
 
 	// 初始化日志
-	if err := logging.LogInit(ygoFlags.LogLevel, ygoFlags.LogOutput, ygoFlags.LogFormat); err != nil {
+	if err := logging.LogInit(logFlags.LogLevel, logFlags.LogOutput, logFlags.LogFormat); err != nil {
 		logrus.Fatal("初始化日志失败", err)
 	}
 
