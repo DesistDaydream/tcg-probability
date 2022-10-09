@@ -9,9 +9,10 @@ import (
 
 type CardsInfo struct {
 	WantCards []WantCard
-	MiscHave  int
-	MiscMin   int
-	MiscMax   int
+	// 除了想要抽到的卡以外其余的卡
+	MiscHave int
+	MiscMin  int
+	MiscMax  int
 }
 
 type WantCard struct {
